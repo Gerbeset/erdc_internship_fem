@@ -4,3 +4,4 @@ import matplotlib.pyplot as plt
 import math as mth
 
 u = 0
+v = 1
