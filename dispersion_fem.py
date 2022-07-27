@@ -127,4 +127,3 @@ plt.plot(nodes,U_Final, color = "black")
 plt.title('Final State')
 
 plt.show()
-
