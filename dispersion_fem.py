@@ -11,7 +11,7 @@ u_0 = syp.sin(2*syp.pi*x)
 
 u_exact = syp.sin(2*syp.pi*(x + ((2*syp.pi)**2)*t)) #Exact solution is correct
 
-N = 120 #Number of dofs
+N = 320 #Number of dofs
 
 #Linear transport wave speed
 a = (2*syp.pi)**3
@@ -100,31 +100,7 @@ for i in range(0, N):
     U_0[i] = u_0.subs(x, nodes[i])  # Create initial condition vector
 
 U_up = np.zeros(N)
-
-################## 1-step test #########################
 U_current = U_0
-#U_Final = np.zeros(N)
-
-U_1 = np.zeros(N)
-U_1 = para_up(U_current)
-
-#Error Analysis
-u_exact_1 = u_exact.subs(t, tau)
-
-U_exact_1 = np.zeros(N)
-
-for i in range(0, N):
-    U_exact_1[i] = u_exact_1.subs(x, nodes[i])
-
-# L1 Error for single step
-Error_1 = 0
-for i in range(0, N):
-    Error_1 = Error_1 + abs(U_1[i] - U_exact_1[i])
-L1_norm = 0
-for i in range(0, N):
-    L1_norm = L1_norm + abs(U_exact_1[i])
-
-print('The 1-step error is:', Error_1 / L1_norm)
 
 ################ METHOD #########################
 U_final = np.zeros(N)
@@ -144,8 +120,7 @@ U_t = np.zeros(N)
 for i in range(0,N):
     U_t[i] = u_exact_t.subs(x,nodes[i])
 
-#print(U_final)
-
+##### L1 Error #####
 L1_norm = 0
 L1_error =0
 for i in range(0,N):
@@ -153,6 +128,32 @@ for i in range(0,N):
     L1_error = L1_error + abs(U_t[i] - U_final[i])*m_i
 
 print('The L1 error is:', L1_error/L1_norm)
+
+#### L2 Error ####
+L2_norm = 0
+L2_error =0
+
+for i in range(0,N):
+    L2_norm = L2_norm + (abs(U_t[i])**2)*m_i
+    L2_error = L2_error + ((U_t[i] - U_final[i])**2)*m_i
+
+print('The L2 error is:', L2_error/L2_norm)
+
+#### Linf Error ####
+Linf_error = 0
+Linf_norm = 0
+
+Linf_list = np.zeros(N)
+Linf_norm_list = np.zeros(N)
+
+for i in range(0,N):
+    Linf_list[i] = abs(U_final[i] - U_t[i])
+    Linf_norm_list[i] = abs(U_t[i])
+
+Linf_error = max(Linf_list)
+Linf_norm = max(Linf_norm_list)
+
+print('The Linf error is:', Linf_error/Linf_norm)
 
 #Creates figures
 plt.figure()
@@ -167,7 +168,6 @@ plt.title('Final State')
 syp.plot(u_exact_t, (x,0,1))
 
 plt.show()
-
 
 
 
